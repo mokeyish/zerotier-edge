@@ -5,7 +5,7 @@ A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that 
 ## Features
 
 - Convenient, launched with a single command.
-- Lightweight, less than 10 MB.
+- Lightweight, less than 5 MB.
 - No docker, just a single binary.
 - No database,  storing all configurations in a directory.
 
