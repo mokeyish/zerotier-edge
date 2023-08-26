@@ -1,0 +1,9 @@
+{
+  "name": "zerotier-edge",
+  "scripts": {
+    "dev": "npm run -w webui -- dev",
+    "build": "npm run -w webui -- build",
+    "serve": "npm run -w webui -- serve"
+  },
+  "workspaces": ["webui"]
+}
