@@ -48,9 +48,9 @@ jobs:
           #   archive: tar.gz tar.xz tar.zst
           # - target: mips64-unknown-linux-muslabi64
           #   archive: tar.gz tar.xz tar.zst
-          - target: aarch64-linux-android
-            os: ubuntu-latest
-            archive: tar.gz tar.xz tar.zst
+          # - target: aarch64-linux-android
+            # os: ubuntu-latest
+            # archive: tar.gz tar.xz tar.zst
           # - target: x86_64-unknown-freebsd
           #   os: ubuntu-latest
           #   archive: tar.gz tar.xz tar.zst
