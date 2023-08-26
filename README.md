@@ -1,6 +1,6 @@
 # Zerotier-Edge
 
-A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that deploied at your edge.
+A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that deployed at your edge.
 
 ## Features
 
