@@ -32,3 +32,10 @@ tracing-subscriber = "0.3"
 rust-embed = "8.0.0"
 mime_guess = "2.0.4"
 clap = { version = "4.0", features = ["derive"] }
+
+
+[profile.release]
+# see: https://github.com/johnthagen/min-sized-rust
+strip = true    # Automatically strip symbols from the binary.
+opt-level = "z" # Optimize for size.
+lto = true
