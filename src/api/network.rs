@@ -86,7 +86,12 @@ async fn update_network(
 
     network = assign_not_none_to(
         &network,
-        NetworkPalyload::read_from_file(ctx.work_dir(), &network_id).unwrap_or_default(),
+        NetworkPalyload::read_from_file(ctx.work_dir(), &network_id).unwrap_or_else(|_| {
+            NetworkPalyload {
+                id: Some(network_id.to_string()),
+                ..Default::default()
+            }
+        }),
     )
     .unwrap_or(network);
 
