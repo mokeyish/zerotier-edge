@@ -17,7 +17,7 @@ A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that 
    ```shell
    ./zerotier-edge
    ```
-
+   Note: `./zerotier-edge --help` will show the help of command.
 3. Login with token and manage your controller.([How to get your token?](https://docs.zerotier.com/self-hosting/network-controllers/#authtoken))
 
 ## Building

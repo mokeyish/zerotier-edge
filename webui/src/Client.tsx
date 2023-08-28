@@ -2,7 +2,7 @@ import type { paths } from './zerotier-api';
 import createClient, { FetchResponse } from 'openapi-fetch';
 import { Accessor, JSX, createContext, createEffect, createSignal, untrack, useContext, onMount } from 'solid-js';
 import { SetStoreFunction, createStore, reconcile } from 'solid-js/store';
-import { Member, Network } from './zerotier';
+import { Member, Network, Status } from './zerotier';
 import { useNavigate } from '@solidjs/router';
 import flowRule from './flow-rule.txt?raw';
 import RuleCompiler from './utils/rule-compiler';
@@ -21,6 +21,7 @@ type UISettings = {
 
 type Client = {
   authRequired: Accessor<boolean>,
+  status: Accessor<Status | undefined>,
   login: (token: string) => Promise<void>,
   logout: () => Promise<void>,
   networks: Accessor<Network[]>,
@@ -56,14 +57,15 @@ export default (props: { children: JSX.Element }) => {
     createSignal(''),
     { name: 'zt1-token', storage: sessionStorage }
   );
+  const [status, setStatus] = createSignal<Status>();
 
-  const [authRequired, setAuthRequired] = createSignal(false);
   const [networks0, setNetworks] = createStore<Network[]>([]);
   const [currentNetwork0, setCurrentNetwork] = createStore<{ currentNetwork?: Network }>({ currentNetwork: undefined  });
   const [members0, setMembers] = createStore<Member[]>([]);
   const networks = () => networks0;
   const members = () => members0;
   const currentNetwork = () => currentNetwork0.currentNetwork;
+  const authRequired = () => !status();
 
 
   let client = createClient<paths>({
@@ -85,11 +87,10 @@ export default (props: { children: JSX.Element }) => {
       return res.data;
     }
     if (res.response.status === 401) {
-      setAuthRequired(true);
+      setStatus(undefined);
     }
     return undefined;
   };
-
 
   const computeMemberActive = (member: { lastSeen?: number  } ): Member => ({ active: (Date.now() - member.lastSeen ?? 0) / 1000 < 60, ...member });
 
@@ -299,9 +300,11 @@ export default (props: { children: JSX.Element }) => {
 
   const login = async (token: string) => {
     setToken(token);
-    if (mapRes(await client.GET('/status', {}))) {
+    const status = mapRes(await client.GET('/status', {}));
+    if (status) {
       await refreshNetworkInfos();
-      setAuthRequired(false);
+      setStatus(status as unknown as Status);
+      navigate('/');
     }
   };
 
@@ -311,6 +314,7 @@ export default (props: { children: JSX.Element }) => {
 
   const provider: Client = {
     authRequired,
+    status,
     login, logout,
     networks,
     currentNetwork,

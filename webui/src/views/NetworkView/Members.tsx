@@ -10,7 +10,7 @@ import { ipv4Regex, ipv6Regex } from './ManageRoutes';
 import dayjs from 'dayjs';
 
 export default () => {
-  const { currentNetwork: network, members, updateNetwork: update, updateMember, deleteMember } = useClient();
+  const { currentNetwork: network, members, updateNetwork: update, updateMember, deleteMember, status } = useClient();
 
   const [authorized, setAuthorized] = createSignal(true);
   const [notAuthorized, setNotAuthorized] = createSignal(true);
@@ -77,7 +77,27 @@ export default () => {
 
 
   const MemberRow = (props: { member: Member }) => {
-    const member = () => props.member;
+
+    const member: () => Member = () => {
+      const member = props.member;
+      const s = status();
+      const isCurrentNode = status()?.address === member.nodeId;
+
+      if (isCurrentNode) {
+        let physicalAddress = s.config?.settings?.surfaceAddresses[0];
+        if (physicalAddress) {
+          physicalAddress = physicalAddress.split('/')[0]
+        }
+        return {
+          ...member,
+          lastSeen: Date.now(),
+          clientVersion: s.version,
+          physicalAddress: physicalAddress
+        };
+      }
+
+      return member;
+    };
     const [showAdanceSetting, setShowAdanceSetting] = createSignal(false);
 
     const setName = (name: string) => updateMember(member(), { name });

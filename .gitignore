@@ -1,5 +1,7 @@
 
 node_modules
 dist
-target
 zt
+
+target
+Cargo.lock

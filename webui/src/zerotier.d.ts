@@ -13,3 +13,15 @@ export type Network = components['schemas']['Network'] & {
 export type Member = components['schemas']['Member'] & {
   active: boolean
 }
+
+
+export type Status = components['schemas']['Status'] & {
+  clock: number,
+  address?: string,
+  config?: {
+    settings?: {
+      surfaceAddresses?: string[]
+    }
+  },
+  online?: boolean
+}
