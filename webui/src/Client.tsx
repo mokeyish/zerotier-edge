@@ -4,9 +4,9 @@ import { Accessor, JSX, createContext, createEffect, createSignal, untrack, useC
 import { SetStoreFunction, createStore, reconcile } from 'solid-js/store';
 import { Member, Network, Status } from './zerotier';
 import { useNavigate } from '@solidjs/router';
+import { makePersisted } from '@solid-primitives/storage';
 import flowRule from './flow-rule.txt?raw';
 import RuleCompiler from './utils/rule-compiler';
-import { makePersisted } from '@solid-primitives/storage';
 
 type UISettings = {
   flowRulesCollapsed: boolean,
@@ -21,8 +21,9 @@ type UISettings = {
 
 type Client = {
   authRequired: Accessor<boolean>,
+  loading: Accessor<boolean>,
   status: Accessor<Status | undefined>,
-  login: (token: string) => Promise<void>,
+  login: (token?: string) => Promise<boolean>,
   logout: () => Promise<void>,
   networks: Accessor<Network[]>,
   createNewNetwork: () => Promise<void>,
@@ -58,6 +59,7 @@ export default (props: { children: JSX.Element }) => {
     { name: 'zt1-token', storage: sessionStorage }
   );
   const [status, setStatus] = createSignal<Status>();
+  const [loading, setLoading] = createSignal(true);
 
   const [networks0, setNetworks] = createStore<Network[]>([]);
   const [currentNetwork0, setCurrentNetwork] = createStore<{ currentNetwork?: Network }>({ currentNetwork: undefined  });
@@ -65,7 +67,7 @@ export default (props: { children: JSX.Element }) => {
   const networks = () => networks0;
   const members = () => members0;
   const currentNetwork = () => currentNetwork0.currentNetwork;
-  const authRequired = () => !status();
+  const authRequired = () => !loading() && !status();
 
 
   let client = createClient<paths>({
@@ -296,15 +298,19 @@ export default (props: { children: JSX.Element }) => {
     }
   }, 3 * 1000);
 
-  onMount(refreshNetworkInfos);
 
-  const login = async (token: string) => {
-    setToken(token);
+  const login = async (token?: string) => {
+    if (token) {
+      setToken(token);
+    }
     const status = mapRes(await client.GET('/status', {}));
     if (status) {
       await refreshNetworkInfos();
       setStatus(status as unknown as Status);
-      navigate('/');
+      return true;
+    } else {
+
+      return false;
     }
   };
 
@@ -312,7 +318,16 @@ export default (props: { children: JSX.Element }) => {
     setToken('');
   };
 
+
+  onMount(async () => {
+    if (await login()) {
+      await refreshNetworkInfos();
+    }
+    setLoading(false);
+  });
+
   const provider: Client = {
+    loading,
     authRequired,
     status,
     login, logout,

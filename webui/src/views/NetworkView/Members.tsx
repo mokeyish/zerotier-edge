@@ -86,7 +86,7 @@ export default () => {
       if (isCurrentNode) {
         let physicalAddress = s.config?.settings?.surfaceAddresses[0];
         if (physicalAddress) {
-          physicalAddress = physicalAddress.split('/')[0]
+          physicalAddress = physicalAddress.split('/')[0];
         }
         return {
           ...member,

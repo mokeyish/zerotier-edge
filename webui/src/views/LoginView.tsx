@@ -1,14 +1,23 @@
-import { createSignal } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import { useClient } from '../Client';
 import FormControl from '../components/FormControl';
 import Logo from '../Logo';
+import { useNavigate } from '@solidjs/router';
 
 
 
 export default () => {
+  const navigate = useNavigate();
   const [token, setToken] = createSignal('');
-  const { login } = useClient();
+  const { login: innerLogin, authRequired } = useClient();
 
+  const login = () => innerLogin(token());
+
+  createEffect(() => {
+    if (!authRequired()) {
+      navigate('/');
+    }
+  });
 
   return <div>
     <div class="hero min-h-screen bg-base-200">
@@ -28,9 +37,7 @@ export default () => {
               </div>
             </FormControl>
             <div class="form-control mt-3">
-              <button class="btn btn-primary" onClick={() => {
-                login(token());
-              }}>Login</button>
+              <button class="btn btn-primary" onClick={login}>Login</button>
             </div>
           </div>
         </div>

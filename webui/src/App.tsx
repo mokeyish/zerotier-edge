@@ -1,23 +1,28 @@
 
 import { Routes, Route, Outlet, useNavigate } from '@solidjs/router';
 
-import { createEffect } from 'solid-js';
+import { Show, createEffect } from 'solid-js';
 import { useClient } from './Client';
 import NetworkView from './views/NetworkView';
 import NetworkListView from './views/NetworkListView';
 import LoginView from './views/LoginView';
 import DefaultLayout from './layouts/Default.Layout';
+import Loading from './views/Loading';
 
 
 const RouteGuard = () => {
   const navigator = useNavigate();
-  const { authRequired } = useClient();
+  const { loading, authRequired } = useClient();
+
   createEffect(() => {
     if (authRequired()) {
       navigator('/login');
     }
   });
-  return <DefaultLayout><Outlet /></DefaultLayout>;
+
+  return <Show when={!loading()} fallback={<Loading />}>
+    <DefaultLayout><Outlet /></DefaultLayout>
+  </Show>;
 };
 
 

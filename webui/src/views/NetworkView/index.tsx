@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from '@solidjs/router';
-import { Show, Suspense, createSignal, onCleanup, onMount, useTransition } from 'solid-js';
+import { Show, Suspense, createSignal, onCleanup, onMount } from 'solid-js';
 import NetworkSettings from './NetworkSettings';
 import Members from './Members';
 import Accordion from '../../components/Accordion';
