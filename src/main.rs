@@ -50,13 +50,62 @@ async fn main() {
     let zt_api = args
         .ztapi
         .unwrap_or_else(|| "http://localhost:9993".to_string());
-    let work_dir = args
-        .work_dir
-        .unwrap_or_else(|| Path::new("zt").to_path_buf());
+
+    let work_dir = args.work_dir.unwrap_or_else(|| {
+        use cfg_if::cfg_if;
+        use faccess::PathExt;
+        // try to reuse ZeroTier working directory
+
+        // # System https://docs.zerotier.com/zerotier/zerotier.conf#configuration-files
+        cfg_if! {
+            if #[cfg(target_os = "windows")] {
+                let working_directory = Some("C:\\ProgramData\\ZeroTier\\One");
+            } else if #[cfg(target_os = "macos")] {
+                let working_directory = Some("/Library/Application Support/ZeroTier/One");
+            } else if #[cfg(target_os = "linux")] {
+                let working_directory = Some("/var/lib/zerotier-one");
+            } else if #[cfg(any(target_os = "freebsd", target_os = "openbsd"))] {
+                let working_directory = Some("/var/db/zerotier-one");
+            } else {
+                let working_directory: Option<&'static str> = None;
+            }
+        };
+
+        if let Some(working_directory) = working_directory.map(Path::new) {
+            if working_directory.exists()
+                && working_directory.is_dir()
+                && working_directory
+                    .writable()
+            {
+               return working_directory.to_path_buf();
+            } else {
+                log::warn!("{:?} is not writable, will try other directory as working_directory to store extra configuration.", working_directory);
+            }
+        }
+
+        // # User https://docs.zerotier.com/zerotier/zerotier.conf#user
+
+        cfg_if! {
+            if #[cfg(target_os = "windows")] {
+                let working_directory = Some("AppData\\Local\\ZeroTier");
+            } else if #[cfg(target_os = "macos")] {
+                let working_directory = Some("Library/Application Support/ZeroTier");
+            } else {
+                let working_directory: Option<&'static str> = None;
+            }
+        }
+        if let (Some(home), Some(working_directory)) =
+            (dirs::home_dir(), working_directory.map(Path::new))
+        {
+            home.join(working_directory)
+        } else {
+            Path::new("zt").to_path_buf()
+        }
+    });
     let work_dir = fs::canonicalize(&work_dir).unwrap_or(work_dir);
 
     log::info!("=>\tzerotier api: {}", zt_api);
-    log::info!("=>\twork_dir: {:?}", &work_dir);
+    log::info!("=>\tworking_directory: {:?}", &work_dir);
 
     // build our application with a route
     let app = Router::new()
@@ -72,7 +121,12 @@ async fn main() {
             .into(),
         );
 
-    log::info!("=>\tlistening on {}", addr);
+    log::info!("=>\tlistening on http://{}", addr);
+
+    if !addr.ip().is_loopback() {
+        log::warn!("For security reasons, it is recommended to use the loopback address and use nginx's https proxy for this service.");
+    }
+
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
