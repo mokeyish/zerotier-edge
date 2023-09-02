@@ -1,3 +1,1 @@
-pub use tracing::{
-    warn, debug, info, trace, error
-};
+pub use tracing::{debug, error, info, trace, warn};

@@ -9,7 +9,7 @@ use futures::future::join_all;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
-use super::{assign_not_none_to, Result, SharedState, ctx::Ctx};
+use super::{assign_not_none_to, ctx::Ctx, Result, SharedState};
 
 #[inline]
 pub fn routes() -> Router<SharedState> {
@@ -26,10 +26,7 @@ pub fn routes() -> Router<SharedState> {
         )
 }
 
-async fn get_members(
-    ctx: Ctx,
-    Path(network_id): Path<String>,
-) -> Result<Json<Vec<MemberPayload>>> {
+async fn get_members(ctx: Ctx, Path(network_id): Path<String>) -> Result<Json<Vec<MemberPayload>>> {
     let member_ids = ctx
         .get_member_ids(network_id.as_str())
         .await?
@@ -119,7 +116,6 @@ async fn delete_member(
     Ok(Json(member))
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 struct MemberPayload {
@@ -141,17 +137,21 @@ struct MemberPayload {
 }
 
 impl MemberPayload {
-    fn combine_from_file(config: Map<String, Value>, network_id: &str, work_dir: &std::path::Path) -> Self {
+    fn combine_from_file(
+        config: Map<String, Value>,
+        network_id: &str,
+        work_dir: &std::path::Path,
+    ) -> Self {
         let mut member =
-            if let Some(member_id) = config.get("id").map(|e| e.as_str()).flatten().map(|s| s) {
+            if let Some(member_id) = config.get("id").and_then(|e| e.as_str()) {
                 let file_path = member_file_path(work_dir, network_id, member_id);
 
-                let member = if file_path.exists() {
+                
+                if file_path.exists() {
                     Self::read_from_file(&file_path).unwrap_or_default()
                 } else {
                     Default::default()
-                };
-                member
+                }
             } else {
                 Default::default()
             };
@@ -172,35 +172,30 @@ impl MemberPayload {
         if let Some(config) = config.as_ref() {
             self.network_id = config
                 .get("nwid")
-                .map(|x| x.as_str())
-                .flatten()
+                .and_then(|x| x.as_str())
                 .map(|s| s.to_string());
 
             self.node_id = config
                 .get("id")
-                .map(|x| x.as_str())
-                .flatten()
+                .and_then(|x| x.as_str())
                 .map(|s| s.to_string());
 
             self.client_version = {
                 let v_major = config
                     .get("vMajor")
-                    .map(|x| x.as_i64())
-                    .flatten()
+                    .and_then(|x| x.as_i64())
                     .unwrap_or_default()
                     .max(0);
 
                 let v_minor = config
                     .get("vMinor")
-                    .map(|x| x.as_i64())
-                    .flatten()
+                    .and_then(|x| x.as_i64())
                     .unwrap_or_default()
                     .max(0);
 
                 let v_rev = config
                     .get("vRev")
-                    .map(|x| x.as_i64())
-                    .flatten()
+                    .and_then(|x| x.as_i64())
                     .unwrap_or_default()
                     .max(0);
                 Some(format!("{v_major}.{v_minor}.{v_rev}"))
@@ -208,8 +203,7 @@ impl MemberPayload {
 
             self.protocol_version = config
                 .get("vProto")
-                .map(|x| x.as_i64())
-                .flatten()
+                .and_then(|x| x.as_i64())
                 .map(|s| s as i32);
         }
 
@@ -218,27 +212,22 @@ impl MemberPayload {
             if let Ok(peer) = ctx.get_peer(address).await {
                 if let Some(preferred_path) = peer
                     .get("paths")
-                    .map(|x| x.as_array())
-                    .flatten()
-                    .map(|paths| {
+                    .and_then(|x| x.as_array())
+                    .and_then(|paths| {
                         paths
                             .iter()
                             .find(|p| matches!(p.get("preferred"), Some(Value::Bool(true))))
                     })
-                    .flatten()
-                    .map(|x| x.as_object())
-                    .flatten()
+                    .and_then(|x| x.as_object())
                 {
                     self.physical_address = preferred_path
                         .get("address")
-                        .map(|x| x.as_str())
-                        .flatten()
+                        .and_then(|x| x.as_str())
                         .map(|s| s.split('/').next().unwrap_or(s).to_string());
 
                     self.last_seen = preferred_path
                         .get("lastReceive")
-                        .map(|x| x.as_i64())
-                        .flatten();
+                        .and_then(|x| x.as_i64());
                 }
             }
         }
@@ -268,7 +257,7 @@ impl MemberPayload {
             .write(true)
             .truncate(true)
             .create(true)
-            .open(&file_path)?;
+            .open(file_path)?;
         serde_json::to_writer(file, &self)?;
         Ok(())
     }

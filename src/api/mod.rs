@@ -1,9 +1,10 @@
-use std::{io, sync::Arc, path::PathBuf};
+use std::{io, path::PathBuf, sync::Arc};
 
 use axum::{
     http::{Error as HttpError, StatusCode},
     response::{IntoResponse, Response},
-    Json, Router, routing::get,
+    routing::get,
+    Json, Router,
 };
 
 use serde::{de::DeserializeOwned, ser::Serialize};
@@ -35,7 +36,7 @@ pub fn routes() -> Router<SharedState> {
     Router::new().nest(
         "/api/v1",
         Router::new()
-        .route("/status", get(status))
+            .route("/status", get(status))
             .merge(network::routes())
             .merge(member::routes())
             .merge(peer::routes()),
@@ -83,7 +84,7 @@ impl IntoResponse for ApiError {
             ApiError::PeerNotFound(_)
             | ApiError::MemberNotFound(_)
             | ApiError::NetworkNotFound(_) => (StatusCode::NOT_FOUND, self.to_string()),
-            | ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, self.to_string()),
+            ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, self.to_string()),
             _ => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
         };
 

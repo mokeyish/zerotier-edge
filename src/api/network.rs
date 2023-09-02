@@ -115,8 +115,10 @@ async fn delete_network(ctx: Ctx, Path(network_id): Path<String>) -> Result<Json
         let _ = std::fs::remove_file(file_path);
         network
     } else {
-        let mut network = NetworkPalyload::default();
-        network.config = Some(network_config);
+        let mut network = NetworkPalyload {
+            config: Some(network_config),
+            ..Default::default()
+        };
         network.update(&ctx).await?;
         network
     }))
@@ -142,14 +144,13 @@ struct NetworkPalyload {
 
 impl NetworkPalyload {
     fn combine_from_file(config: Map<String, Value>, work_dir: &std::path::Path) -> Self {
-        let mut network =
-            if let Some(network_id) = config.get("id").map(|e| e.as_str()).flatten().map(|s| s) {
-                let mut network = Self::read_from_file(work_dir, network_id).unwrap_or_default();
-                network.id = Some(network_id.to_string());
-                network
-            } else {
-                Default::default()
-            };
+        let mut network = if let Some(network_id) = config.get("id").and_then(|e| e.as_str()) {
+            let mut network = Self::read_from_file(work_dir, network_id).unwrap_or_default();
+            network.id = Some(network_id.to_string());
+            network
+        } else {
+            Default::default()
+        };
 
         network.config = Some(config);
         network
@@ -166,20 +167,19 @@ impl NetworkPalyload {
         if let Some(config) = self.config.as_ref() {
             self.id = config
                 .get("id")
-                .map(|x| x.as_str())
-                .flatten()
+                .and_then(|x| x.as_str())
                 .map(|s| s.to_string());
         }
 
         // fetch from api
         if let Some(network_id) = self.id.as_deref() {
             // fetch total_member_count and authorized_member_count
-            let member_ids = ctx.get_member_ids(&network_id).await?;
+            let member_ids = ctx.get_member_ids(network_id).await?;
 
             let members = join_all(
                 member_ids
                     .iter()
-                    .map(|(member_id, _)| ctx.get_member(&network_id, member_id)),
+                    .map(|(member_id, _)| ctx.get_member(network_id, member_id)),
             )
             .await
             .into_iter()
@@ -188,7 +188,7 @@ impl NetworkPalyload {
             let total_member_count = members.len();
             let authorized_member_count = members
                 .iter()
-                .flat_map(|m| m.get("authorized").map(|a| a.as_bool()).flatten())
+                .flat_map(|m| m.get("authorized").and_then(|a| a.as_bool()))
                 .filter(|a| *a)
                 .count();
 

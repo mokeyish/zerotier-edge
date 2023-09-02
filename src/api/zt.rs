@@ -1,4 +1,4 @@
-use hyper::{body, Request, StatusCode, Response, Body};
+use hyper::{body, Body, Request, Response, StatusCode};
 use serde_json::{Map, Value};
 
 use super::{ApiError, Ctx, Result};
@@ -22,7 +22,7 @@ impl Ctx {
             let bytes = body::to_bytes(res.into_body()).await?;
             return Err(match String::from_utf8(bytes.to_vec()) {
                 Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err).into()),
+                Err(err) => ApiError::Zerotier(format!("read {}", err)),
             });
         }
         let bytes = body::to_bytes(res.into_body()).await?;
@@ -50,7 +50,11 @@ impl Ctx {
         if !res.status().is_success() {
             let bytes = body::to_bytes(res.body_mut()).await?;
             return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(if s.is_empty() { res.status().to_string() } else { s }),
+                Ok(s) => ApiError::Zerotier(if s.is_empty() {
+                    res.status().to_string()
+                } else {
+                    s
+                }),
                 Err(err) => ApiError::Zerotier(format!("read {}", err)),
             });
         }
@@ -62,10 +66,7 @@ impl Ctx {
         Ok(networks)
     }
 
-    pub(super) async fn get_network(
-        &self,
-        network_id: &str,
-    ) -> Result<Map<String, Value>> {
+    pub(super) async fn get_network(&self, network_id: &str) -> Result<Map<String, Value>> {
         let client = self.http_client().clone();
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
@@ -154,10 +155,8 @@ impl Ctx {
             .get_status()
             .await?
             .as_object()
-            .map(|s| s.get("address"))
-            .flatten()
-            .map(|s| s.as_str())
-            .flatten()
+            .and_then(|s| s.get("address"))
+            .and_then(|s| s.as_str())
         {
             let bytes = serde_json::to_vec(network)?;
 
@@ -188,14 +187,13 @@ impl Ctx {
             let network = serde_json::from_slice(&bytes)?;
             Ok(network)
         } else {
-            Err(ApiError::Zerotier("cannot get node_id from api: /status".to_string()))
+            Err(ApiError::Zerotier(
+                "cannot get node_id from api: /status".to_string(),
+            ))
         }
     }
 
-    pub(super) async fn delete_network(
-        &self,
-        network_id: &str,
-    ) -> Result<Map<String, Value>> {
+    pub(super) async fn delete_network(&self, network_id: &str) -> Result<Map<String, Value>> {
         let client = self.http_client().clone();
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
@@ -230,10 +228,7 @@ impl Ctx {
         Ok(network)
     }
 
-    pub(super) async fn get_member_ids(
-        &self,
-        network_id: &str,
-    ) -> Result<Map<String, Value>> {
+    pub(super) async fn get_member_ids(&self, network_id: &str) -> Result<Map<String, Value>> {
         let client = self.http_client().clone();
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
@@ -261,7 +256,8 @@ impl Ctx {
 
         let bytes = body::to_bytes(res.into_body()).await?;
 
-        let member_ids = if let Ok(arr) = serde_json::from_slice::<Vec<Map<String, Value>>>(&bytes) {
+        let member_ids = if let Ok(arr) = serde_json::from_slice::<Vec<Map<String, Value>>>(&bytes)
+        {
             let mut member_ids = Map::new();
             for a in arr {
                 member_ids.extend(a);
@@ -460,17 +456,11 @@ impl Ctx {
         let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
-
 }
 
-
 fn map_res_err(res: Response<Body>) -> Result<Response<Body>> {
-    if !res.status().is_success() {
-        if res.status() == StatusCode::UNAUTHORIZED {
-            return Err(ApiError::Unauthorized);
-        }
+    if !res.status().is_success() && res.status() == StatusCode::UNAUTHORIZED {
+        return Err(ApiError::Unauthorized);
     }
     Ok(res)
 }
-
-
