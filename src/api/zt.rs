@@ -115,7 +115,7 @@ impl Ctx {
         let req = Request::builder()
             .method("POST")
             .uri(format!(
-                "{}/controller/network/{network_id}/",
+                "{}/controller/network/{network_id}",
                 base_url.trim_end_matches('/')
             ))
             .header("X-ZT1-AUTH", token)
@@ -201,7 +201,7 @@ impl Ctx {
         let req = Request::builder()
             .method("DELETE")
             .uri(format!(
-                "{}/controller/network/{network_id}/",
+                "{}/controller/network/{network_id}",
                 base_url.trim_end_matches('/')
             ))
             .header("X-ZT1-AUTH", token)
