@@ -20,11 +20,11 @@ export default () => {
   });
 
   return <div>
-    <div class="hero min-h-screen bg-base-200">
+    <div class="hero absolute inset-0 bg-base-200">
       <div class="hero-content flex-col lg:flex-row-reverse">
-        <div class="card flex-shrink-0 w-96 max-w-sm shadow-2xl bg-base-100">
+        <div class="card flex-shrink-0 max-w-sm shadow-2xl bg-base-100">
           <div class="card-body">
-            <div class="my-6">
+            <div class="py-6">
               <Logo />
               <div class="mt-3 text-xs indent-6 opacity-50 hover:opacity-100">Manage your self-hosted ZeroTier network controller.</div>
             </div>
