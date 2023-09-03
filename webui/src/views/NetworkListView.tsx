@@ -17,8 +17,8 @@ export default () => {
         <button class="btn btn-primary" onclick={createNewNetwork}>Create A Network</button>
       </div>
 
-      <div class="flex flex-row">
-        <div class="mr-8">
+      <div class="flex flex-row flex-wrap">
+        <div class="w-52">
           <div class="text-2xl">Your Networks</div>
 
           <div class="h-2"></div>
@@ -29,17 +29,17 @@ export default () => {
         </div>
 
         <div>
-          <div class="overflow-x-auto">
+          <div class="">
             <table class="table">
               {/* head */}
               <thead>
                 <tr>
                   <th>NETWORK ID</th>
                   <th>NAME</th>
-                  <th>DESCIPTION</th>
-                  <th>SUBNET</th>
-                  <th>NODES</th>
-                  <th>CREATED</th>
+                  <th class="hidden sm:table-cell">DESCIPTION</th>
+                  <th class="hidden md:table-cell">SUBNET</th>
+                  <th class="hidden lg:table-cell">NODES</th>
+                  <th class="hidden xl:table-cell">CREATED</th>
                 </tr>
               </thead>
               <tbody>
@@ -47,10 +47,10 @@ export default () => {
                   {(net) => <tr class="btn-ghost cursor-pointer" onclick={() => navigate(`/network/${net.id}`)}>
                     <th>{net.id}</th>
                     <th>{net.config.name}</th>
-                    <th>{net.description ?? ''}</th>
-                    <th>{net.config.routes.find((route) => !route.via)?.target}</th>
-                    <th><div class="badge badge-primary font-mono">{net.authorizedMemberCount ?? 0}</div></th>
-                    <th>{new Date(net.config.creationTime).toISOString().substring(0, 10)}</th>
+                    <th class="hidden sm:table-cell">{net.description ?? ''}</th>
+                    <th class="hidden md:table-cell">{net.config.routes.find((route) => !route.via)?.target}</th>
+                    <th class="hidden lg:table-cell"><div class="badge badge-primary font-mono">{net.authorizedMemberCount ?? 0}</div></th>
+                    <th class="hidden xl:table-cell">{new Date(net.config.creationTime).toISOString().substring(0, 10)}</th>
                   </tr>}
                 </For>
               </tbody>

@@ -28,7 +28,7 @@ export default () => {
   return <>
     <Suspense fallback={<div>Loading...</div>}>
 
-      <div class="mx-12">
+      <div class="sm:mx-3 md:mx-6 lg:mx-8 xl:mx-12">
 
         <a onClick={() => navigate('/')} class="opacity-70 cursor-pointer">
           <Icon.ArrowLeft /><span class="ml-2">Networks</span>
