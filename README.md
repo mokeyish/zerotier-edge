@@ -55,6 +55,15 @@ To build `Zerotier-Edge` from source, ensure that you have [Rust](https://www.ru
    ```shell
    ./target/release/zerotier-edge
    ```
+4. Config nginx (optional)
+
+   It is recommended to enable https in nginx and then proxy our service.
+   
+   ```nginx
+   location /zerotier-edge/ {
+        proxy_pass http://127.0.0.1:9394/;
+   }
+   ```
 
 ## Similar projects
 

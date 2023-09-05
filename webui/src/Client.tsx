@@ -68,17 +68,18 @@ export default (props: { children: JSX.Element }) => {
   const members = () => members0;
   const currentNetwork = () => currentNetwork0.currentNetwork;
   const authRequired = () => !loading() && !status();
+  const baseUrl = `${location.pathname}api/v1`;
 
 
   let client = createClient<paths>({
-    baseUrl: '/api/v1', headers: {
+    baseUrl, headers: {
       'X-ZT1-AUTH': token() // 
     }
   });
 
   createEffect(() => {
     client = createClient<paths>({
-      baseUrl: '/api/v1', headers: {
+      baseUrl, headers: {
         'X-ZT1-AUTH': token() // 
       }
     });
