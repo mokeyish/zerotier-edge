@@ -7,21 +7,30 @@ A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that 
 - Convenient, launched with a single command.
 - Lightweight, less than 5 MB.
 - No docker, just a single binary.
-- No database,  storing all configurations in a directory.
+- No database, storing all configurations in a directory.
 
 ## Quick start
 
-1. Download `Zerotier-Edge` from [here](https://github.com/mokeyish/zerotier-edge/releases).
-2. Start service
+1. Install Zerotier-Edge.
+
+   Download `Zerotier-Edge` from [here](https://github.com/mokeyish/zerotier-edge/releases) then unzip it.
+
+2. Launch service
 
    ```shell
    ./zerotier-edge
    ```
    Note: `./zerotier-edge --help` will show the help of command.
-3. Login with token and manage your controller.([How to get your token?](https://docs.zerotier.com/self-hosting/network-controllers/#authtoken))
-4. Config nginx (optional)
 
-   It is recommended to enable https in nginx and then proxy our service.
+3. Access Web UI to manage your controller.
+
+   1. Open [http://127.0.0.1:9394/](http://127.0.0.1:9394/) on your browser.
+   2. Login with token ([How to get your token?](https://docs.zerotier.com/self-hosting/network-controllers/#authtoken))
+   3. Manage your controller.
+
+4. Configure remote access (optional)
+
+   It is recommended to enable https in Nginx and then proxy our service.
    
    ```nginx
    location /zerotier-edge/ {
@@ -68,6 +77,8 @@ To build `Zerotier-Edge` from source, ensure that you have [Rust](https://www.ru
 
 - [ZeroUI](https://github.com/dec0dOS/zero-ui)
 - [ztncui](https://github.com/key-networks/ztncui)
+
+Note：I don't want to use heavyweight deployment based on Docker/Nodejs. So I created this project.
 
 ## License
 
