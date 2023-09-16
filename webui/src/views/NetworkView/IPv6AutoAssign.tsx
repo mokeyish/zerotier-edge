@@ -3,6 +3,7 @@ import { useClient } from '../../Client';
 import CheckBox from '../../components/CheckBox';
 import Fieldset from '../../components/Fieldset';
 import FormControl from '../../components/FormControl';
+import ipv6Generator from '../../utils/ipv6-generator';
 
 
 
@@ -31,6 +32,33 @@ export default () => {
     }
   });
 
+  const Ipv6AddrRfc4193Range = () => {
+    const ipv6 = ipv6Generator.generateRfc4193(network().id).replaceAll(':', '');
+    return <div class="pl-8 zt-ipv6-rfc4193-template">
+      fd
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(2, 4)}</span>:
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(4, 8)}</span>:
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(8, 12)}</span>:
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(12, 16)}</span>:
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(16, 18)}</span>99:93
+      <span class="zt-ipv6-rfc4193-template-hl2">__</span>:
+      <span class="zt-ipv6-rfc4193-template-hl2">____</span>:
+      <span class="zt-ipv6-rfc4193-template-hl2">____</span>
+    </div>;
+  }
+
+  const Ipv6Addr6planeRange = () => {
+    const ipv6 = ipv6Generator.generate6plane(network().id).replaceAll(':', '');;
+    return <div class="pl-8 zt-ipv6-rfc4193-template">fc
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(2, 4)}</span>:
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(4, 8)}</span>:
+      <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(8, 10)}</span>
+      <span class="zt-ipv6-rfc4193-template-hl2">__</span>:
+      <span class="zt-ipv6-rfc4193-template-hl2">____</span>:
+      <span class="zt-ipv6-rfc4193-template-hl2">____</span>:
+      0000:0000:0001</div>;
+  }
+
 
   // const setZt = (zt: boolean) => update({
   //   config: {
@@ -57,7 +85,7 @@ export default () => {
         <span class="p-2">ZeroTier RFC4193 (/128 for each device)</span>
       </div>}>
         <Show when={rfc4193()}>
-          <div class="pl-8 zt-ipv6-rfc4193-template">fd<span class="zt-ipv6-rfc4193-template-hl">8b</span>:<span class="zt-ipv6-rfc4193-template-hl">d512</span>:<span class="zt-ipv6-rfc4193-template-hl">4fd6</span>:<span class="zt-ipv6-rfc4193-template-hl">b510</span>:<span class="zt-ipv6-rfc4193-template-hl">81</span>99:93<span class="zt-ipv6-rfc4193-template-hl2">__</span>:<span class="zt-ipv6-rfc4193-template-hl2">____</span>:<span class="zt-ipv6-rfc4193-template-hl2">____</span></div>
+          <Ipv6AddrRfc4193Range/>
         </Show>
       </FormControl>
 
@@ -69,7 +97,7 @@ export default () => {
         <span class="p-2">ZeroTier 6PLANE (/80 routable for each device)</span>
       </div>}>
         <Show when={m6plane()}>
-          <div class="pl-8 zt-ipv6-rfc4193-template">fc<span class="zt-ipv6-rfc4193-template-hl">5d</span>:<span class="zt-ipv6-rfc4193-template-hl">6002</span>:<span class="zt-ipv6-rfc4193-template-hl">ce</span><span class="zt-ipv6-rfc4193-template-hl2">__</span>:<span class="zt-ipv6-rfc4193-template-hl2">____</span>:<span class="zt-ipv6-rfc4193-template-hl2">____</span>:0000:0000:0001</div>
+          <Ipv6Addr6planeRange/>
         </Show>
       </FormControl>
     </div>

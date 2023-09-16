@@ -1,13 +1,14 @@
 import type { Member } from '../../zerotier';
 import { ipv4Subnets, useClient } from '../../Client';
 import { For, Match, Show, Switch, createMemo, createSignal } from 'solid-js';
+import { ipv4Regex, ipv6Regex } from './ManageRoutes';
 import CheckBox from '../../components/CheckBox';
 import TextInput from '../../components/TextInput';
 import Accordion from '../../components/Accordion';
 import FormControl from '../../components/FormControl';
 import Icon from '../../components/Icon';
-import { ipv4Regex, ipv6Regex } from './ManageRoutes';
 import dayjs from 'dayjs';
+import ipv6Generator from '../../utils/ipv6-generator';
 
 export default () => {
   const { currentNetwork: network, members, updateNetwork: update, updateMember, deleteMember, status } = useClient();
@@ -135,6 +136,22 @@ export default () => {
       return ipv4Regex.test(ip) || ipv6Regex.test(ip);
     });
 
+
+    const ipv6AddrRfc4193 = createMemo(() => {
+      if (network().config.v6AssignMode?.rfc4193) {
+        const m = member();
+        return ipv6Generator.generateRfc4193(m.networkId, m.nodeId);
+      }
+    });
+
+    const ipv6Addr6plane = createMemo(() => {
+      if (network().config.v6AssignMode?.['6plane']) {
+        const m = member();
+        return ipv6Generator.generate6plane(m.networkId, m.nodeId);
+      }
+    });
+
+
     return <>
       <tr>
         <td>
@@ -152,6 +169,8 @@ export default () => {
         </td>
         <td >
           <div class="flex flex-col gap-2">
+            <Show when={ipv6AddrRfc4193()}><div>{ipv6AddrRfc4193()}</div></Show>
+            <Show when={ipv6Addr6plane()}><div>{ipv6Addr6plane()}</div></Show>
             <For each={ipAssignments()}>
               {ip => <div>
                 <button type="button" class="text-primary" onClick={() => deleteIp(ip)}><Icon.TrashCan /></button>
