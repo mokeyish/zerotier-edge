@@ -95,7 +95,10 @@ export default (props: { children: JSX.Element }) => {
     return undefined;
   };
 
-  const computeMemberActive = (member: { lastSeen?: number  } ): Member => ({ active: (Date.now() - member.lastSeen ?? 0) / 1000 < 60, ...member });
+  const computeMemberActive = (member: Partial<Member> ): Member => ({ 
+    active:  status()?.address === member.nodeId || (Date.now() - (member.lastSeen ?? 0)) / 1000 < 60, // 1 minutes.
+    ...member
+  });
 
   const updateNetwork = async (networkPart: Partial<Network>) => {
     const network = untrack(currentNetwork);
