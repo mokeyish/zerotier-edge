@@ -25,6 +25,8 @@ export default () => {
   const membersHelpCollapsed = () => network()?.ui?.membersHelpCollapsed ?? true;
   const setMembersHelpCollapsed = (collapsed: boolean) => update({ ui: { membersHelpCollapsed: collapsed } });
 
+  const totalMembersCount = createMemo(() => members().length);
+
   const filteredMembers = createMemo(() => {
     let ms = members();
 
@@ -64,6 +66,8 @@ export default () => {
       }
     }) : ms;
   });
+
+  const filteredMembersCount = createMemo(() => filteredMembers().length);
 
   const currentIpv4SubnetInfo = createMemo(() => {
     const ipPools = network().config.ipAssignmentPools;
@@ -232,7 +236,7 @@ export default () => {
   return <div>
 
     <Switch>
-      <Match when={members().length === 0} >
+      <Match when={totalMembersCount() === 0} >
         <div class="p-4 bg-warning">
           <div class="max-w-3xl m-auto">
             <h2>No devices have joined this network</h2>
@@ -242,7 +246,7 @@ export default () => {
         </div>
       </Match>
 
-      <Match when={members().length === 1} >
+      <Match when={totalMembersCount() === 1} >
         <div class="p-4 bg-warning">
           <div class="max-w-3xl m-auto">
             <h2>One device has joined this network</h2>
@@ -255,7 +259,7 @@ export default () => {
 
     </Switch>
 
-    <Show when={members().length > 0}>
+    <Show when={totalMembersCount() > 0}>
       <div>
         <div class="pt-4">
           <div class="flex flex-wrap">
@@ -321,7 +325,7 @@ export default () => {
       <div>
         <div>
           <Icon.AngleLeft />
-          <span><b>1-4</b>/<b>4</b></span>
+          <span><b>1-{filteredMembersCount()}</b>/<b>{filteredMembersCount()}</b></span>
           <Icon.AngleRight />
         </div>
         <div class="not-prose overflow-x-auto">
