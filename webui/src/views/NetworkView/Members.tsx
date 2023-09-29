@@ -173,8 +173,8 @@ export default () => {
         </td>
         <td >
           <div class="flex flex-col gap-2">
-            <Show when={ipv6AddrRfc4193()}><div>{ipv6AddrRfc4193()}</div></Show>
-            <Show when={ipv6Addr6plane()}><div>{ipv6Addr6plane()}</div></Show>
+            <Show when={ipv6AddrRfc4193()}><div title="RFC4193 address">{ipv6AddrRfc4193()}</div></Show>
+            <Show when={ipv6Addr6plane()}><div title="6PLANE address">{ipv6Addr6plane()}</div></Show>
             <For each={ipAssignments()}>
               {ip => <div>
                 <button type="button" class="text-primary" onClick={() => deleteIp(ip)}><Icon.TrashCan /></button>
