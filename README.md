@@ -2,12 +2,14 @@
 
 A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that deployed at your edge.
 
+<a href="https://github.com/mokeyish/zerotier-edge/tree/main/screenshots"><strong>Explore the screenshots »</strong></a>
+
 ## Features
 
 - Convenient, launched with a single command.
 - Lightweight, less than 5 MB.
 - No docker, just a single binary.
-- No database, storing all configurations in a directory.
+- No database, storing all configurations in zerotier working directory(`*.ext.json`).
 
 ## Quick start
 
@@ -48,17 +50,11 @@ To build `Zerotier-Edge` from source, ensure that you have [Rust](https://www.ru
    cd zerotier-edge
    ```
 
-2. Build web UI:
+2. Build:
 
    ```shell
    pnpm install
    pnpm run build
-   ```
-
-3. Compile the binary:
-
-   ```shell
-   cargo build --release
    ```
 
 4. Display available options:
