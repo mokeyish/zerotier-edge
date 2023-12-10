@@ -1,0 +1,45 @@
+# .github/workflows/test.yml
+
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+  pull_request:
+    branches:
+      - main
+      - release/**
+
+jobs:
+  cleanliness:
+    name: cleanliness ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install Rust Toolchain Components
+        uses: actions-rs/toolchain@v1.0.7
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+          target: ${{ matrix.target }}
+          override: true
+      - name: touch dist
+        run: mkdir -p webui/dist/ && touch webui/dist/touch
+
+      - name: Clippy
+        run: cargo clippy
+      - name: Rustfmt
+        run: cargo fmt --all -- --check

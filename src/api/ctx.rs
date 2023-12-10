@@ -3,7 +3,7 @@ use std::path::Path;
 use super::{ApiError, Result, SharedState};
 use async_trait::async_trait;
 use axum::{extract::FromRequestParts, http::request::Parts};
-use hyper::{client::HttpConnector, Client};
+use reqwest::Client;
 
 const ZT1_AUTH_TOKEN: &str = "X-ZT1-AUTH";
 
@@ -26,7 +26,7 @@ impl Ctx {
         &self.state.work_dir
     }
 
-    pub fn http_client(&self) -> &Client<HttpConnector> {
+    pub fn http_client(&self) -> &Client {
         &self.state.client
     }
 }

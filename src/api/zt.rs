@@ -1,4 +1,3 @@
-use hyper::{body, Body, Request, Response, StatusCode};
 use serde_json::{Map, Value};
 
 use super::{ApiError, Ctx, Result};
@@ -8,25 +7,14 @@ impl Ctx {
         let client = self.http_client().clone();
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
-
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!("{}/status", base_url.trim_end_matches('/')))
+        let status = client
+            .get(format!("{}/status", base_url.trim_end_matches('/')))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
-
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-        let bytes = body::to_bytes(res.into_body()).await?;
-        let status = serde_json::from_slice(&bytes)?;
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
         Ok(status)
     }
 
@@ -34,34 +22,17 @@ impl Ctx {
         let client = self.http_client().clone();
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
-
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!(
+        let networks = client
+            .get(format!(
                 "{}/controller/network",
                 base_url.trim_end_matches('/')
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
-
-        let res = client.request(req).await?;
-        let mut res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            let bytes = body::to_bytes(res.body_mut()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(if s.is_empty() {
-                    res.status().to_string()
-                } else {
-                    s
-                }),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.body_mut()).await?;
-
-        let networks = serde_json::from_slice(&bytes)?;
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
 
         Ok(networks)
     }
@@ -71,33 +42,21 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!(
+        let network = client
+            .get(format!(
                 "{}/controller/network/{network_id}",
                 base_url.trim_end_matches('/')
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| {
+                map_not_found(err, || ApiError::NetworkNotFound(network_id.to_string()))
+            })?
+            .json()
+            .await?;
 
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::NetworkNotFound(network_id.to_string()));
-            }
-
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
 
@@ -110,36 +69,22 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let bytes = serde_json::to_vec(network)?;
-
-        let req = Request::builder()
-            .method("POST")
-            .uri(format!(
+        let network = client
+            .post(format!(
                 "{}/controller/network/{network_id}",
                 base_url.trim_end_matches('/')
             ))
             .header("X-ZT1-AUTH", token)
             .header("Content-Type", "application/json")
-            .body(bytes.into())?;
-
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::NetworkNotFound(network_id.to_string()));
-            }
-
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
+            .json(network)
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| {
+                map_not_found(err, || ApiError::NetworkNotFound(network_id.to_string()))
+            })?
+            .json()
+            .await?;
         Ok(network)
     }
 
@@ -158,33 +103,21 @@ impl Ctx {
             .and_then(|s| s.get("address"))
             .and_then(|s| s.as_str())
         {
-            let bytes = serde_json::to_vec(network)?;
-
-            let req = Request::builder()
-                .method("POST")
-                .uri(format!(
+            let network = client
+                .post(format!(
                     "{}/controller/network/{}______",
                     base_url.trim_end_matches('/'),
                     node_id
                 ))
                 .header("X-ZT1-AUTH", token)
                 .header("Content-Type", "application/json")
-                .body(bytes.into())?;
+                .json(network)
+                .send()
+                .await?
+                .error_for_status()?
+                .json()
+                .await?;
 
-            let res = client.request(req).await?;
-            let res = map_res_err(res)?;
-
-            if !res.status().is_success() {
-                let bytes = body::to_bytes(res.into_body()).await?;
-                return Err(match String::from_utf8(bytes.to_vec()) {
-                    Ok(s) => ApiError::Zerotier(s),
-                    Err(err) => ApiError::Zerotier(format!("read {}", err)),
-                });
-            }
-
-            let bytes = body::to_bytes(res.into_body()).await?;
-
-            let network = serde_json::from_slice(&bytes)?;
             Ok(network)
         } else {
             Err(ApiError::Zerotier(
@@ -198,33 +131,21 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("DELETE")
-            .uri(format!(
+        let network = client
+            .delete(format!(
                 "{}/controller/network/{network_id}",
                 base_url.trim_end_matches('/')
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| {
+                map_not_found(err, || ApiError::NetworkNotFound(network_id.to_string()))
+            })?
+            .json()
+            .await?;
 
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::NetworkNotFound(network_id.to_string()));
-            }
-
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
 
@@ -233,28 +154,18 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!(
+        let bytes = client
+            .get(format!(
                 "{}/controller/network/{}/member",
                 base_url.trim_end_matches('/'),
                 network_id
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
-
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
+            .send()
+            .await?
+            .error_for_status()?
+            .bytes()
+            .await?;
 
         let member_ids = if let Ok(arr) = serde_json::from_slice::<Vec<Map<String, Value>>>(&bytes)
         {
@@ -279,34 +190,21 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!(
+        let network = client
+            .get(format!(
                 "{}/controller/network/{}/member/{}",
                 base_url.trim_end_matches('/'),
                 network_id,
                 member_id
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| map_not_found(err, || ApiError::MemberNotFound(member_id.to_string())))?
+            .json()
+            .await?;
 
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::MemberNotFound(network_id.to_string()));
-            }
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
 
@@ -320,11 +218,8 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let bytes = serde_json::to_vec(member)?;
-
-        let req = Request::builder()
-            .method("POST")
-            .uri(format!(
+        let network = client
+            .post(format!(
                 "{}/controller/network/{}/member/{}",
                 base_url.trim_end_matches('/'),
                 network_id,
@@ -332,25 +227,14 @@ impl Ctx {
             ))
             .header("X-ZT1-AUTH", token)
             .header("Content-Type", "application/json")
-            .body(bytes.into())?;
+            .json(member)
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| map_not_found(err, || ApiError::MemberNotFound(member_id.to_string())))?
+            .json()
+            .await?;
 
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::MemberNotFound(network_id.to_string()));
-            }
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
 
@@ -363,34 +247,21 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("DELETE")
-            .uri(format!(
+        let network = client
+            .delete(format!(
                 "{}/controller/network/{}/member/{}",
                 base_url.trim_end_matches('/'),
                 network_id,
                 member_id
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| map_not_found(err, || ApiError::MemberNotFound(member_id.to_string())))?
+            .json()
+            .await?;
 
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::MemberNotFound(network_id.to_string()));
-            }
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
 
@@ -399,26 +270,14 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!("{}/peer", base_url.trim_end_matches('/')))
+        let network = client
+            .get(format!("{}/peer", base_url.trim_end_matches('/')))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
-
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
         Ok(network)
     }
 
@@ -427,40 +286,28 @@ impl Ctx {
         let base_url = self.base_url();
         let token = self.zt1_token().unwrap_or_default();
 
-        let req = Request::builder()
-            .method("GET")
-            .uri(format!(
+        let network = client
+            .get(format!(
                 "{}/peer/{}",
                 base_url.trim_end_matches('/'),
                 address
             ))
             .header("X-ZT1-AUTH", token)
-            .body(Default::default())?;
+            .send()
+            .await?
+            .error_for_status()
+            .map_err(|err| map_not_found(err, || ApiError::PeerNotFound(address.to_string())))?
+            .json()
+            .await?;
 
-        let res = client.request(req).await?;
-        let res = map_res_err(res)?;
-
-        if !res.status().is_success() {
-            if res.status() == StatusCode::NOT_FOUND {
-                return Err(ApiError::PeerNotFound(address.to_string()));
-            }
-            let bytes = body::to_bytes(res.into_body()).await?;
-            return Err(match String::from_utf8(bytes.to_vec()) {
-                Ok(s) => ApiError::Zerotier(s),
-                Err(err) => ApiError::Zerotier(format!("read {}", err)),
-            });
-        }
-
-        let bytes = body::to_bytes(res.into_body()).await?;
-
-        let network = serde_json::from_slice(&bytes)?;
         Ok(network)
     }
 }
 
-fn map_res_err(res: Response<Body>) -> Result<Response<Body>> {
-    if !res.status().is_success() && res.status() == StatusCode::UNAUTHORIZED {
-        return Err(ApiError::Unauthorized);
+fn map_not_found(err: reqwest::Error, map: impl Fn() -> super::ApiError) -> super::ApiError {
+    use reqwest::StatusCode;
+    match err.status() {
+        Some(StatusCode::NOT_FOUND) => map(),
+        _ => err.into(),
     }
-    Ok(res)
 }

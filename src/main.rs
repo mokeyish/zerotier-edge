@@ -5,7 +5,6 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use hyper::StatusCode;
 use std::{fs, net::ToSocketAddrs, path::Path};
 
 mod api;
@@ -121,16 +120,15 @@ async fn main() {
             .into(),
         );
 
-    log::info!("=>\tlistening on http://{}", addr);
-
     if !addr.ip().is_loopback() {
         log::warn!("For security reasons, it is recommended to use the loopback address and use nginx's https proxy for this service.");
     }
 
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+
+    log::info!("=>\tlistening on http://{}", addr);
+
+    axum::serve(listener, app).await.unwrap();
 }
 
 // We use static route matchers ("/" and "/index.html") to serve our home
@@ -163,12 +161,13 @@ where
     T: Into<String>,
 {
     fn into_response(self) -> Response {
+        use axum::http::{header::CONTENT_TYPE, StatusCode};
         let path = self.0.into();
 
         match Asset::get(path.as_str()) {
             Some(content) => {
                 let mime = mime_guess::from_path(path).first_or_octet_stream();
-                ([(hyper::header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
+                ([(CONTENT_TYPE, mime.as_ref())], content.data).into_response()
             }
             None => (StatusCode::NOT_FOUND, "404 Not Found").into_response(),
         }

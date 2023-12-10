@@ -142,19 +142,17 @@ impl MemberPayload {
         network_id: &str,
         work_dir: &std::path::Path,
     ) -> Self {
-        let mut member =
-            if let Some(member_id) = config.get("id").and_then(|e| e.as_str()) {
-                let file_path = member_file_path(work_dir, network_id, member_id);
+        let mut member = if let Some(member_id) = config.get("id").and_then(|e| e.as_str()) {
+            let file_path = member_file_path(work_dir, network_id, member_id);
 
-                
-                if file_path.exists() {
-                    Self::read_from_file(&file_path).unwrap_or_default()
-                } else {
-                    Default::default()
-                }
+            if file_path.exists() {
+                Self::read_from_file(&file_path).unwrap_or_default()
             } else {
                 Default::default()
-            };
+            }
+        } else {
+            Default::default()
+        };
 
         member.config = Some(config);
         member
@@ -225,9 +223,7 @@ impl MemberPayload {
                         .and_then(|x| x.as_str())
                         .map(|s| s.split('/').next().unwrap_or(s).to_string());
 
-                    self.last_seen = preferred_path
-                        .get("lastReceive")
-                        .and_then(|x| x.as_i64());
+                    self.last_seen = preferred_path.get("lastReceive").and_then(|x| x.as_i64());
                 }
             }
         }

@@ -11,7 +11,7 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use thiserror::Error;
 
-use hyper::{client::HttpConnector, Client};
+use reqwest::Client;
 
 mod ctx;
 mod member;
@@ -29,7 +29,7 @@ type Result<T> = std::result::Result<T, ApiError>;
 pub struct ApiState {
     pub api: String,
     pub work_dir: PathBuf,
-    pub client: Client<HttpConnector>,
+    pub client: Client,
 }
 
 pub fn routes() -> Router<SharedState> {
@@ -53,10 +53,10 @@ pub enum ApiError {
     Io(#[from] io::Error),
     #[error("http error {0}")]
     Http(#[from] HttpError),
-    #[error("hyper error {0}")]
-    Hyper(#[from] hyper::Error),
     #[error("serde json error {0}")]
     SerdeJson(#[from] serde_json::Error),
+    #[error("http client error {0}")]
+    HttpClient(reqwest::Error),
     #[error("zerotier error {0}")]
     Zerotier(String),
     #[error("peer {0} not found error.")]
@@ -67,6 +67,19 @@ pub enum ApiError {
     NetworkNotFound(String),
     #[error("Unauthorized")]
     Unauthorized,
+}
+
+impl From<reqwest::Error> for ApiError {
+    fn from(err: reqwest::Error) -> Self {
+        if let Some(status) = err.status() {
+            use reqwest::StatusCode;
+            if status == StatusCode::UNAUTHORIZED {
+                return ApiError::Unauthorized;
+            }
+        }
+
+        ApiError::HttpClient(err)
+    }
 }
 
 impl IntoResponse for ApiError {
