@@ -17,8 +17,8 @@ importers:
         specifier: ^6.4.0
         version: 6.4.0
       '@solid-primitives/scheduled':
-        specifier: ^1.4.1
-        version: 1.4.1(solid-js@1.7.11)
+        specifier: ^1.4.3
+        version: 1.4.3(solid-js@1.7.11)
       '@solid-primitives/storage':
         specifier: ^2.1.1
         version: 2.1.1(solid-js@1.7.11)
@@ -856,7 +856,7 @@ packages:
       '@solid-primitives/keyboard': 1.2.4(solid-js@1.7.11)
       '@solid-primitives/platform': 0.0.105(solid-js@1.7.11)
       '@solid-primitives/rootless': 1.4.2(solid-js@1.7.11)
-      '@solid-primitives/scheduled': 1.4.1(solid-js@1.7.11)
+      '@solid-primitives/scheduled': 1.4.3(solid-js@1.7.11)
       '@solid-primitives/static-store': 0.0.4(solid-js@1.7.11)
       '@solid-primitives/utils': 6.2.1(solid-js@1.7.11)
       solid-js: 1.7.11
@@ -872,7 +872,7 @@ packages:
       '@solid-primitives/media': 2.2.4(solid-js@1.7.11)
       '@solid-primitives/refs': 1.0.5(solid-js@1.7.11)
       '@solid-primitives/rootless': 1.4.2(solid-js@1.7.11)
-      '@solid-primitives/scheduled': 1.4.1(solid-js@1.7.11)
+      '@solid-primitives/scheduled': 1.4.3(solid-js@1.7.11)
       '@solid-primitives/static-store': 0.0.4(solid-js@1.7.11)
       '@solid-primitives/styles': 0.0.110(solid-js@1.7.11)
       '@solid-primitives/utils': 6.2.1(solid-js@1.7.11)
@@ -979,8 +979,8 @@ packages:
       solid-js: 1.7.11
     dev: true
 
-  /@solid-primitives/scheduled@1.4.1(solid-js@1.7.11):
-    resolution: {integrity: sha512-OLcNXwYpX7HUOEqNPcmR31dkyI1E2imkMDBRlqsGT0ZhJV1L2g0TEREpo4nm/kUhh8LVQzkfnxS+GONx9kh90A==}
+  /@solid-primitives/scheduled@1.4.3(solid-js@1.7.11):
+    resolution: {integrity: sha512-HfWN5w7b7FEc6VPLBKnnE302h90jsLMuR28Fcf7neRGGf8jBj6wm6/UFQ00VlKexHFMR6KQ2u4VBh5a1ZcqM8g==}
     peerDependencies:
       solid-js: ^1.6.12
     dependencies:
