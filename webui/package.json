@@ -34,7 +34,7 @@
     "vitest": "^0.34.4"
   },
   "dependencies": {
-    "@codemirror/language": "^6.9.0",
+    "@codemirror/language": "^6.10.2",
     "@codemirror/lint": "^6.4.0",
     "@solid-primitives/scheduled": "^1.4.1",
     "@solid-primitives/storage": "^2.1.1",
