@@ -21,7 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "autoprefixer": "^10.4.14",
-    "daisyui": "^3.5.1",
+    "daisyui": "^4.12.10",
     "eslint": "^8.47.0",
     "jsdom": "^22.1.0",
     "openapi-typescript": "^6.4.5",
