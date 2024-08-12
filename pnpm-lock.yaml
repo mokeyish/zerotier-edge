@@ -29,8 +29,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.0.4)
       dayjs:
-        specifier: ^1.11.9
-        version: 1.11.9
+        specifier: ^1.11.12
+        version: 1.11.12
       openapi-fetch:
         specifier: ^0.7.2
         version: 0.7.2
@@ -1139,8 +1139,8 @@ packages:
     resolution: {integrity: sha512-/mMTei/JXPqvFqQtfyTowxmJVwr2PVAeCcDxyFf6LhoOu/09TX2OX3kb2wzi4DMXcfj4OItwDOnhl5oziPnT6g==}
     engines: {node: '>=14'}
 
-  dayjs@1.11.9:
-    resolution: {integrity: sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==}
+  dayjs@1.11.12:
+    resolution: {integrity: sha512-Rt2g+nTbLlDWZTwwrIXjy9MeiZmSDI375FvZs72ngxx8PDC6YXOeR3q5LAuPzjZQxhiWdRKac7RKV+YyQYfYIg==}
 
   debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -3218,7 +3218,7 @@ snapshots:
       whatwg-mimetype: 3.0.0
       whatwg-url: 12.0.1
 
-  dayjs@1.11.9: {}
+  dayjs@1.11.12: {}
 
   debug@4.3.4:
     dependencies:
