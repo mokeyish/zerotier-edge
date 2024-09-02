@@ -42,8 +42,8 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8(solid-js@1.7.11)
       '@tailwindcss/typography':
-        specifier: ^0.5.9
-        version: 0.5.9(tailwindcss@3.3.3)
+        specifier: ^0.5.15
+        version: 0.5.15(tailwindcss@3.3.3)
       '@types/node':
         specifier: ^20.14.5
         version: 20.14.5
@@ -831,10 +831,10 @@ packages:
     peerDependencies:
       solid-js: ^1.5.3
 
-  '@tailwindcss/typography@0.5.9':
-    resolution: {integrity: sha512-t8Sg3DyynFysV9f4JDOVISGsjazNb48AeIYQwcL+Bsq5uf4RYL75C1giZ43KISjeDGBaTN3Kxh7Xj/vRSMJUUg==}
+  '@tailwindcss/typography@0.5.15':
+    resolution: {integrity: sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==}
     peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders'
+      tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20'
 
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -2847,7 +2847,7 @@ snapshots:
     dependencies:
       solid-js: 1.7.11
 
-  '@tailwindcss/typography@0.5.9(tailwindcss@3.3.3)':
+  '@tailwindcss/typography@0.5.15(tailwindcss@3.3.3)':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
