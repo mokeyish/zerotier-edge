@@ -17,8 +17,8 @@ importers:
         specifier: ^6.4.0
         version: 6.4.0
       '@solid-primitives/scheduled':
-        specifier: ^1.4.1
-        version: 1.4.1(solid-js@1.7.11)
+        specifier: ^1.4.4
+        version: 1.4.4(solid-js@1.7.11)
       '@solid-primitives/storage':
         specifier: ^2.1.1
         version: 2.1.1(solid-js@1.7.11)
@@ -792,8 +792,8 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/scheduled@1.4.1':
-    resolution: {integrity: sha512-OLcNXwYpX7HUOEqNPcmR31dkyI1E2imkMDBRlqsGT0ZhJV1L2g0TEREpo4nm/kUhh8LVQzkfnxS+GONx9kh90A==}
+  '@solid-primitives/scheduled@1.4.4':
+    resolution: {integrity: sha512-BTGdFP7t+s7RSak+s1u0eTix4lHP23MrbGkgQTFlt1E+4fmnD/bEx3ZfNW7Grylz3GXgKyXrgDKA7jQ/wuWKgA==}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -1233,6 +1233,7 @@ packages:
   eslint@8.47.0:
     resolution: {integrity: sha512-spUQWrdPt+pRVP1TTJLmfRNJJHHZryFmptzcafwSvHsceV81djHOdnEeDmkdotZyLNjDhrOasNK8nikkoG1O8Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -2736,7 +2737,7 @@ snapshots:
       '@solid-primitives/keyboard': 1.2.4(solid-js@1.7.11)
       '@solid-primitives/platform': 0.0.105(solid-js@1.7.11)
       '@solid-primitives/rootless': 1.4.2(solid-js@1.7.11)
-      '@solid-primitives/scheduled': 1.4.1(solid-js@1.7.11)
+      '@solid-primitives/scheduled': 1.4.4(solid-js@1.7.11)
       '@solid-primitives/static-store': 0.0.4(solid-js@1.7.11)
       '@solid-primitives/utils': 6.2.1(solid-js@1.7.11)
       solid-js: 1.7.11
@@ -2748,7 +2749,7 @@ snapshots:
       '@solid-primitives/media': 2.2.4(solid-js@1.7.11)
       '@solid-primitives/refs': 1.0.5(solid-js@1.7.11)
       '@solid-primitives/rootless': 1.4.2(solid-js@1.7.11)
-      '@solid-primitives/scheduled': 1.4.1(solid-js@1.7.11)
+      '@solid-primitives/scheduled': 1.4.4(solid-js@1.7.11)
       '@solid-primitives/static-store': 0.0.4(solid-js@1.7.11)
       '@solid-primitives/styles': 0.0.110(solid-js@1.7.11)
       '@solid-primitives/utils': 6.2.1(solid-js@1.7.11)
@@ -2814,7 +2815,7 @@ snapshots:
       '@solid-primitives/utils': 6.2.1(solid-js@1.7.11)
       solid-js: 1.7.11
 
-  '@solid-primitives/scheduled@1.4.1(solid-js@1.7.11)':
+  '@solid-primitives/scheduled@1.4.4(solid-js@1.7.11)':
     dependencies:
       solid-js: 1.7.11
 
