@@ -16,7 +16,7 @@ bump +args: require_set-version
 
 # Print current version
 version:
-  @cargo pkgid | cut -d@ -f2
+  @cargo pkgid | cut -d# -f2 | cut -d: -f2 | cut -d@ -f2
 
 setup: require_set-version
   pnpm install
