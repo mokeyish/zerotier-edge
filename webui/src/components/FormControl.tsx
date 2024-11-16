@@ -2,7 +2,7 @@ import { JSX, Show } from 'solid-js';
 
 export default (props: {
   label?: string | JSX.Element,
-  children: JSX.Element,
+  children?: JSX.Element,
   class?: string,
   orientation?: 'vertical' | 'horizontal'
 }) => {

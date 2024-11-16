@@ -45,10 +45,10 @@ export default () => {
       <span class="zt-ipv6-rfc4193-template-hl2">____</span>:
       <span class="zt-ipv6-rfc4193-template-hl2">____</span>
     </div>;
-  }
+  };
 
   const Ipv6Addr6planeRange = () => {
-    const ipv6 = ipv6Generator.generate6plane(network().id).replaceAll(':', '');;
+    const ipv6 = ipv6Generator.generate6plane(network().id).replaceAll(':', '');
     return <div class="pl-8 zt-ipv6-rfc4193-template">fc
       <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(2, 4)}</span>:
       <span class="zt-ipv6-rfc4193-template-hl">{ipv6.substring(4, 8)}</span>:
@@ -57,7 +57,7 @@ export default () => {
       <span class="zt-ipv6-rfc4193-template-hl2">____</span>:
       <span class="zt-ipv6-rfc4193-template-hl2">____</span>:
       0000:0000:0001</div>;
-  }
+  };
 
 
   // const setZt = (zt: boolean) => update({

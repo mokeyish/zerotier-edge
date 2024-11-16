@@ -13,6 +13,7 @@ mod log;
 use api::ApiState;
 
 #[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
 struct Args {
     /// specify hostname
     #[arg(short = 'H', long)]
@@ -24,17 +25,24 @@ struct Args {
 
     /// zerotier controller api address, default: http://localhost:9993
     #[arg(short = 'Z', long)]
-    ztapi: Option<String>,
+    zt_api: Option<String>,
 
     /// work dir, the directry to store configurations.
     #[arg(short = 'W', long)]
     work_dir: Option<std::path::PathBuf>,
+    //  /// print token to stdout, default: false.
+    //  #[arg(short = 'T', long)]
+    //  token: bool
 }
 
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
 
+    run(args).await
+}
+
+async fn run(args: Args) {
     // initialize tracing
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
@@ -47,7 +55,7 @@ async fn main() {
         .expect("must have one sock addr.");
 
     let zt_api = args
-        .ztapi
+        .zt_api
         .unwrap_or_else(|| "http://localhost:9993".to_string());
 
     let work_dir = args.work_dir.unwrap_or_else(|| {

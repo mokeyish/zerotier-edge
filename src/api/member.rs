@@ -75,7 +75,9 @@ async fn update_member(
     Json(mut member): Json<MemberPayload>,
 ) -> Result<Json<MemberPayload>> {
     let mut config = member.config.take();
-    if let Some(member_config) = config {
+    if let Some(partial_config) = config {
+        let mut member_config = ctx.get_member(&network_id, &member_id).await?;
+        member_config.extend(partial_config);
         config = Some(
             ctx.update_member(network_id.as_str(), member_id.as_str(), &member_config)
                 .await?,

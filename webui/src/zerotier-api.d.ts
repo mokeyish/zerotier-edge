@@ -337,6 +337,11 @@ export interface components {
        */
       revision?: number | null;
       /**
+       * @description Allow the member to be authorized without OIDC/SSO
+       * @example false
+       */
+      ssoExempt?: boolean | null;
+      /**
        * @description Array of 2 member tuples of tag [ID, tag value]
        * @example [
        *   [

@@ -1,0 +1,171 @@
+# .github/workflows/build.yml
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: false
+      features:
+        type: string
+        required: false
+        default: default
+        description: Space or comma separated list of features to activate
+      prerelease:
+        type: boolean
+        description: "Identify the release as a prerelease. Defaults to false"
+        required: false
+
+  workflow_dispatch:
+    inputs:
+      features:
+        type: string
+        required: false
+        default: default
+        description: Space or comma separated list of features to activate
+
+
+jobs:
+  build:
+    name: build ${{ matrix.target }} ${{ inputs.version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            archive: zip
+          - target: x86_64-pc-windows-gnu
+            os: windows-latest
+            archive: zip
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+            archive: zip
+          - target: i686-pc-windows-msvc
+            os: windows-latest
+            archive: zip
+          # - target: i686-pc-windows-gnu  # error: linker `i686-w64-mingw32-gcc` not found
+          #   os: windows-latest
+          #   archive: zip
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            archive: zip
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            archive: zip
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          # - target: arch64-unknown-linux-musl
+          #   archive: tar.gz tar.xz tar.zst
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          - target: arm-unknown-linux-musleabi
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          - target: arm-unknown-linux-musleabihf
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          # - target: mips-unknown-linux-musl
+          #   archive: tar.gz tar.xz tar.zst
+          # - target: mips-unknown-linux-musl
+          #   archive: tar.gz tar.xz tar.zst
+          # - target: mips64-unknown-linux-muslabi64
+          #   archive: tar.gz tar.xz tar.zst
+          - target: aarch64-linux-android
+            os: ubuntu-latest
+            archive: tar.gz tar.xz tar.zst
+          # - target: x86_64-unknown-freebsd
+          #   os: ubuntu-latest
+          #   archive: tar.gz tar.xz tar.zst
+          # - target: x86_64-unknown-netbsd
+          #   os: ubuntu-latest
+          #   archive: tar.gz tar.xz tar.zst
+          # - target: wasm32-unknown-emscripten
+          #   archive: tar.gz tar.xz tar.zst
+
+    runs-on: ${{matrix.os}}
+    env:
+      DIST_DIR: zerotier-edge-${{ matrix.target }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: just build --release --no-default-features --features ${{ inputs.features }} --target=${{ matrix.target }}
+        env:
+          USE_CROSS: ${{ matrix.os == 'ubuntu-latest' }}
+
+      - name: Prepare package
+        run: |
+          mkdir $DIST_DIR
+          cp LICENSE $DIST_DIR
+          cp README*.md $DIST_DIR
+          echo "Version: ${{ inputs.version }}" > $DIST_DIR/version
+          echo "Build date: $(date)" >> $DIST_DIR/version
+          echo "Commit: $(git rev-parse HEAD)" >> $DIST_DIR/version
+        shell: bash
+
+      - name: Publish archive
+        if: ${{ !contains(matrix.target, 'windows') && !contains(matrix.target, 'darwin') }}
+        env:
+          ARCHIVE_FILE: zerotier-edge-${{ matrix.target }}-${{inputs.version}}.tar.gz
+        run: |
+          cp target/${{ matrix.target }}/release/zerotier-edge $DIST_DIR
+          tar -zcvf $ARCHIVE_FILE $DIST_DIR
+          shasum -a256 $ARCHIVE_FILE > $ARCHIVE_FILE-sha256sum.txt
+          echo "archive_file=$ARCHIVE_FILE" >> $GITHUB_ENV
+
+      - name: Publish zip archive macos
+        if: ${{ contains(matrix.target, 'darwin') }}
+        env:
+          ARCHIVE_FILE: zerotier-edge-${{ matrix.target }}-${{inputs.version}}.zip
+        run: |
+          cp target/${{ matrix.target }}/release/zerotier-edge $DIST_DIR
+          zip -9r $ARCHIVE_FILE $DIST_DIR
+          shasum -a256 $ARCHIVE_FILE > $ARCHIVE_FILE-sha256sum.txt
+          echo "archive_file=$ARCHIVE_FILE" >> $GITHUB_ENV
+
+      - name: Publish zip archive windows
+        if: ${{ contains(matrix.target, 'windows') }}
+        env:
+          ARCHIVE_FILE: zerotier-edge-${{ matrix.target }}-${{inputs.version}}.zip
+        run: |
+          cp target/${{ matrix.target }}/release/zerotier-edge.exe $DIST_DIR
+          7z a -tzip $ARCHIVE_FILE $DIST_DIR
+          echo ${{ hashFiles(env.ARCHIVE_FILE) }} > $ARCHIVE_FILE-sha256sum.txt
+          echo "archive_file=$ARCHIVE_FILE" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zerotier-edge-${{ matrix.target }}-${{ inputs.version || github.ref_name }}
+          retention-days: 30
+          path: ${{ env.archive_file }}
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2.0.6
+        if: ${{ startsWith(inputs.version, 'v') }}
+        with:
+          draft: false
+          prerelease: ${{ inputs.prerelease }}
+          tag_name: ${{ inputs.version }}
+          files: |
+            ${{ env.archive_file }}
+            ${{ env.archive_file }}-sha256sum.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

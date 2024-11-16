@@ -8,7 +8,7 @@ export default (props: { children: JSX.Element }) => {
       <div class="text-xl sm:text-4xl">Manage Your Zerotier Networks</div>
     </div>
 
-    <div class="sm:max-w-7xl mx-auto">
+    <div class="sm:max-w-8xl mx-auto">
       <div class="prose max-w-none ">
         {props.children}
       </div>

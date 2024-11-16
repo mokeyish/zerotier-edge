@@ -2,9 +2,9 @@
   "name": "zerotier-edge",
   "scripts": {
     "dev": "npm run -w webui -- dev",
-    "build-ui": "npm run -w webui -- build",
-    "build": "npm run build-ui && cargo build --release",
-    "serve": "npm run -w webui -- serve"
+    "build": "npm run -w webui -- build",
+    "serve": "npm run -w webui -- serve",
+    "lint-fix": "npm run -w webui -- lint-fix"
   },
   "workspaces": ["webui"]
 }

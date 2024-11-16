@@ -197,11 +197,11 @@ export default () => {
           </Show>
         </td>
         <td class="p-1">
-          <button onClick={() => deleteMember(member())}><Icon.TrashCan class="text-primary" /></button>
+          <button onClick={() => deleteMember(member())} title="Delete Member"><Icon.TrashCan class="text-primary" /></button>
         </td>
         <td class="p-1">
-          <Show when={member().hidden} fallback={<button onClick={hideMember}><Icon.Hide class="text-primary" /></button>}>
-            <button onClick={unHideMember}><Icon.UnHide class="text-primary" /></button>
+          <Show when={member().hidden} fallback={<button onClick={hideMember} title="Hide Member"><Icon.Hide class="text-primary" /></button>}>
+            <button onClick={unHideMember} title="Unhide Member"><Icon.UnHide class="text-primary" /></button>
           </Show>
         </td>
       </tr>

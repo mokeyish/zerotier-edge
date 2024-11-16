@@ -22,6 +22,7 @@ A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that 
    ```shell
    ./zerotier-edge
    ```
+
    Note: `./zerotier-edge --help` will show the help of command.
 
 3. Access Web UI to manage your controller.
@@ -33,12 +34,13 @@ A ZeroTier Controller Web UI for a self-hosted ZeroTier network controller that 
 4. Configure remote access (optional)
 
    It is recommended to enable https in Nginx and then proxy our service.
-   
+
    ```nginx
    location /zerotier-edge/ {
         proxy_pass http://127.0.0.1:9394/;
    }
    ```
+
 ## Building
 
 To build `Zerotier-Edge` from source, ensure that you have [Rust](https://www.rust-lang.org/learn/get-started) installed. Then, follow these steps in your terminal:
@@ -50,11 +52,16 @@ To build `Zerotier-Edge` from source, ensure that you have [Rust](https://www.ru
    cd zerotier-edge
    ```
 
-2. Build:
+2. Install dependencies:
 
    ```shell
-   pnpm install
-   pnpm run build
+   just setup
+   ```
+
+3. Build:
+
+   ```shell
+   just build --release
    ```
 
 4. Display available options:
