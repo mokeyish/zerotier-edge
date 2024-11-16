@@ -1,4 +1,5 @@
 name: 'Setup'
+description: 'Initial setup for the workflow.'
 
 runs:
   using: "composite"
@@ -26,3 +27,14 @@ runs:
       uses: baptiste0928/cargo-install@v3
       with:
         crate: patch-crate
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
+    - run: just setup
+      shell: bash
