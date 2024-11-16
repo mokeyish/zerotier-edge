@@ -29,13 +29,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
-      - name: Install Rust Toolchain Components
-        uses: actions-rs/toolchain@v1.0.7
-        with:
-          toolchain: stable
-          components: rustfmt, clippy
-          target: ${{ matrix.target }}
-          override: true
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: touch dist
         run: mkdir -p webui/dist/ && touch webui/dist/touch
 

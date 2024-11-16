@@ -15,6 +15,9 @@ repository = "https://github.com/mokeyish/zerotier-edge"
 license = "GPL-v3.0"
 readme = "README.md"
 
+[features]
+default = []
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
