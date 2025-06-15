@@ -1,5 +1,5 @@
 name: 'Setup'
-description: 'Initial setup for the workflow.'
+description: 'Install Rust Toolchain Components, just, and cross for building on multiple targets.'
 
 runs:
   using: "composite"
@@ -15,6 +15,7 @@ runs:
 
     - name: Install cross
       uses: taiki-e/install-action@v2
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       with:
         tool: cross
 
