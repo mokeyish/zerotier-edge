@@ -396,7 +396,7 @@ const getIpv4Subnet = (name: string): Ipv4SubnetInfo => {
 
   return {
     name,
-    target: `${name.replaceAll('*', '0')}/${8 * astreriskCount}`,
+    target: `${name.replaceAll('*', '0')}/${8 * (4 - astreriskCount)}`,
     range: {
       ipRangeStart: start,
       ipRangeEnd: end
