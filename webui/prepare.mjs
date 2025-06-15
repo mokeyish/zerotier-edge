@@ -156,7 +156,7 @@ const generateOpenAPI = async () => {
   };
 
   // await v1();
-  await v2();
+  // await v2();
 };
 
 const downloadRuleCompiler = async () => {
