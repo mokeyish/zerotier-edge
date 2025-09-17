@@ -64,7 +64,7 @@ export default () => {
           <FormControl label="Access Control" class="max-w-lg">
             <div>
               <div class="my-4">
-                <div>Privite</div>
+                <div>Private</div>
                 <input type="radio" name="radio-10" class="radio radio-primary" checked={isPrivate()} onChange={(e) => setPrivate(e.target.checked)} />
                 <div class="text-xs max-w-lg">Nodes must be authorized to become members</div>
               </div>
