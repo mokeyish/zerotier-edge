@@ -9,7 +9,7 @@ export default () => {
   const [nodeId, setNodeId] = createSignal('');
   const nodeIdValidate = createMemo(() => {
     const id = nodeId();
-    return id.length === 10 && [...id].every(c => '0123456789abcdef'.includes(c));
+    return id.length === 10 && [...id].every(c => '0123456789abcdefABCDEF'.includes(c));
   });
 
   return <Fieldset legend="Manually Add Member">
