@@ -86,7 +86,7 @@ export default () => {
                 class="w-full"
                 classList={{ 'bg-primary': v4EasyMode(), 'text-primary-content': v4EasyMode() }}
                 onClick={() => setV4EasyMode(true)}>
-                Esay
+                Easy
               </button>
             </li>
             <li class="flex-1 m-0 p-0">

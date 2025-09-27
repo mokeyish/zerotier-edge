@@ -13,7 +13,7 @@ export default () => {
   });
 
   return <Fieldset legend="Manually Add Member">
-    <FormControl label="Node Id">
+    <FormControl label="Node ID">
       <TextInput  class="w-full max-w-xs input-sm" placeholder="8badf00d13"  value={nodeId} onInput={e => setNodeId(e.target.value)}/>
     </FormControl>
     <FormControl class="mt-6">

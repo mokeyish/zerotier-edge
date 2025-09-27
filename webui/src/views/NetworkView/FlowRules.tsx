@@ -91,12 +91,12 @@ export default () => {
   return <div>
 
     <div class="flex flex-wrap">
-      <CodeMirror config={flowRuleEditorConfig} class="min-w-80 min-h-[20vh] max-h-[80vh] flex-1 bg-base-100 shadow overflow-y-auto p-4" classList={{
+      <CodeMirror config={flowRuleEditorConfig} class="min-w-80 min-h-[20vh] max-h-[80vh] flex-1 bg-base-100 overflow-y-auto p-4" classList={{
         'border-2': lintError(),
         'border-error': lintError()
       }} />
 
-      <div class="ml-2 w-80 min-h-[20vh] max-h-[80vh]"><TextArea class="w-full h-full shadow font-mono text-xs" value={ruleJson} /></div>
+      <div class="ml-2 w-80 min-h-[20vh] max-h-[80vh]"><TextArea class="w-full h-full font-mono text-xs" value={ruleJson} /></div>
     </div>
 
     <div class="mt-6 flex items-center justify-between">

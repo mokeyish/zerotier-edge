@@ -237,7 +237,7 @@ export default () => {
 
     <Switch>
       <Match when={totalMembersCount() === 0} >
-        <div class="p-4 bg-warning">
+        <div class="p-4">
           <div class="max-w-3xl m-auto">
             <h2>No devices have joined this network</h2>
             <p>Use the ZerotierOne app on your devices to <b>join</b> <span class="text-lg">{network().id}</span>.</p>
@@ -403,5 +403,3 @@ export default () => {
 
   </div>;
 };
-
-

@@ -5,7 +5,7 @@ const config: Config = {
     './index.html',
     './src/**/*.{js,ts,jsx,tsx,css,md,mdx,html,json,scss}',
   ],
-  darkMode: 'class',
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       '--btn-text-case': 'unset'
@@ -14,13 +14,16 @@ const config: Config = {
   daisyui: {
     themes: [
       {
-        "light": {
-          ...require("daisyui/src/theming/themes")["[data-theme=winter]"],
-          // "--btn-text-case": "none",
-          // "--rounded-btn": "3px"
+        light: {
+          ...require('daisyui/src/theming/themes')['[data-theme=bumblebee]'],
         }
-      }
-      , "dark", "cupcake"],
+      },
+      {
+        dark: {
+          ...require('daisyui/src/theming/themes')['[data-theme=luxury]'],
+        }
+      },
+    ],
   },
   plugins: [
     require("@tailwindcss/typography"),
