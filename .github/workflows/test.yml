@@ -33,6 +33,13 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Install Rust Toolchain Components
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+          target: ${{ matrix.target }}
+
       - name: touch dist
         run: mkdir -p webui/dist/ && touch webui/dist/touch
 
