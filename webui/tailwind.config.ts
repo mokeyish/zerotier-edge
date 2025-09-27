@@ -6,7 +6,7 @@ const config: Config = {
     './index.html',
     './src/**/*.{js,ts,jsx,tsx,css,md,mdx,html,json,scss}',
   ],
-  darkMode: ["class", '[data-theme="dark"]'],
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       '--btn-text-case': 'unset'
