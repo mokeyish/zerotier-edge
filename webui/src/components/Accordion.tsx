@@ -10,7 +10,7 @@ export default (props: {
 }) => {
   const [checked, setChecked] = createSignal(props.checked ?? false);
 
-  return <div class="shadow shadow-current rounded-md">
+  return <div class="rounded-md">
     <div
       class="p-3 font-bold cursor-pointer select-none bg-neutral text-neutral-content rounded-md  "
       classList={{

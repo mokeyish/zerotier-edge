@@ -11,5 +11,5 @@ export default (props: {
     'min' | 'max' | 'step' | 'value' | 'onChange'>
 ) => {
   const [local, other] = splitProps(props, ['onChange']);
-  return <input type="number" {...other} onChange={e => local.onChange?.(parseInt(e.target.value))}/>;
+  return <input class="input input-bordered" type="number" {...other} onChange={e => local.onChange?.(parseInt(e.target.value))}/>;
 };

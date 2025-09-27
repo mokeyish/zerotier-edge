@@ -19,13 +19,17 @@ export default () => {
 
       <div class="flex flex-row flex-wrap">
         <div class="w-52">
-          <div class="text-2xl">Your Networks</div>
+          <div class="font-bold text-2xl">Your Networks</div>
 
           <div class="h-2"></div>
 
-          <div>Networks: {networks().length}</div>
+          <div>Networks: 
+            <span class="font-bold">{networks().length}</span>
+          </div>
 
-          <div>Athorized Nodes: {authorizedMemberCount()}/{totalMemberCount()}</div>
+          <div>Authorized Nodes: 
+            <span class="font-bold">{authorizedMemberCount()} / {totalMemberCount()}</span>
+          </div>
         </div>
 
         <div>
@@ -36,7 +40,7 @@ export default () => {
                 <tr>
                   <th>NETWORK ID</th>
                   <th>NAME</th>
-                  <th class="hidden sm:table-cell">DESCIPTION</th>
+                  <th class="hidden sm:table-cell">DESCRIPTION</th>
                   <th class="hidden md:table-cell">SUBNET</th>
                   <th class="hidden lg:table-cell">NODES</th>
                   <th class="hidden xl:table-cell">CREATED</th>

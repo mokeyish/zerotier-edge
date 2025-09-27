@@ -63,15 +63,41 @@ export default () => {
         <div>
           <FormControl label="Access Control" class="max-w-lg">
             <div>
-              <div class="my-4">
-                <div>Private</div>
-                <input type="radio" name="radio-10" class="radio radio-primary" checked={isPrivate()} onChange={(e) => setPrivate(e.target.checked)} />
-                <div class="text-xs max-w-lg">Nodes must be authorized to become members</div>
+              <div className="my-4">
+                <div className="flex items-center space-x-2 text-base">
+                  <input 
+                    type="radio" 
+                    id="private"
+                    name="radio-10"
+                    className="radio radio-primary w-[1em] h-[1em]"
+                    checked={isPrivate()}
+                    onChange={e => setPrivate(e.target.checked)}
+                  />
+                  <label htmlFor="private" className="cursor-pointer">
+                    Private
+                  </label>
+                </div>
+                <div className="italic indent-6 text-xs max-w-lg">
+                  Nodes must be authorized to become members
+                </div>
               </div>
-              <div class="my-4">
-                <div>Public</div>
-                <input type="radio" name="radio-10" class="radio radio-primary" checked={!isPrivate()} onChange={(e) => setPrivate(!e.target.checked)} />
-                <div class="text-xs max-w-lg">Any node that knows the Network ID can become a member. Members cannot be de-authorized or deleted. Members that haven't been online in 30 days will be removed, but can rejoin.</div>
+              <div className="my-4">
+                <div className="flex items-center space-x-2 text-base">
+                  <input
+                    type="radio"
+                    id="public"
+                    name="radio-10"
+                    className="radio radio-primary w-[1em] h-[1em]"
+                    checked={!isPrivate()}
+                    onChange={e => setPrivate(!e.target.checked)}
+                  />
+                  <label htmlFor="public" className="cursor-pointer">
+                    Public
+                  </label>
+                </div>
+                <div className="italic indent-6 text-xs max-w-lg">
+                  Any node that knows the Network ID can become a member. Members cannot be de-authorized or deleted. Members that haven't been online in 30 days will be removed, but can rejoin.
+                </div>
               </div>
             </div>
 

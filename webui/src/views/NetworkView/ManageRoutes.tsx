@@ -76,7 +76,7 @@ export default () => {
         <FormControl label="Desitination">
           <TextInput class="w-full max-w-xs" placeholder="10.11.12.0/24" value={destination() ?? ''} onChange={v => setDestination(v.trim())} />
         </FormControl>
-        <FormControl label="Via">
+        <FormControl label="via">
           <TextInput class="w-full max-w-xs" placeholder="192.168.168.1" value={via() ?? ''} onChange={v => setVia(v.trim())} />
         </FormControl>
       </div>
