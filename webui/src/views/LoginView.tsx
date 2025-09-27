@@ -1,7 +1,7 @@
 import { createEffect, createSignal } from 'solid-js';
 import { useClient } from '../Client';
 import FormControl from '../components/FormControl';
-import Logo from '../Logo';
+import Logo from '../components/Logo';
 import { useNavigate } from '@solidjs/router';
 
 
