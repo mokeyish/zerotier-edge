@@ -3,7 +3,6 @@ import type { JSX } from 'solid-js';
 import Logo from '../components/Logo';
 
 
-
 export default (props: { children: JSX.Element }) => {
   return <div class="bg-base-100 absolute inset-0 overflow-y-auto">
     <div class="flex flex-col items-center p-6 mb-8 bg-neutral text-neutral-content">

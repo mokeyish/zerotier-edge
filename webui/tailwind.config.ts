@@ -13,16 +13,16 @@ const config: Config = {
   },
   daisyui: {
     themes: [
-			{
-				light: {
-					...require('daisyui/src/theming/themes')['[data-theme=bumblebee]'],
-				}
-			},
-			{
-				dark: {
-					...require('daisyui/src/theming/themes')['[data-theme=luxury]'],
-				}
-			},
+      {
+        light: {
+          ...require('daisyui/src/theming/themes')['[data-theme=bumblebee]'],
+        }
+      },
+      {
+        dark: {
+          ...require('daisyui/src/theming/themes')['[data-theme=luxury]'],
+        }
+      },
     ],
   },
   plugins: [
