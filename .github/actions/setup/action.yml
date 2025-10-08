@@ -7,8 +7,9 @@ runs:
     - name: Install Rust Toolchain Components
       uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
-        target: ${{ matrix.target }}
+        toolchain: ${{ matrix.toolchain || 'stable' }}
+        target: ${{ matrix.build-std && 'x86_64-unknown-linux-gnu' || matrix.target }}
+        components: ${{ matrix.build-std && 'rust-src' || '' }}
 
     - name: Install just
       uses: extractions/setup-just@v3
